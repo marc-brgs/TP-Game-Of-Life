@@ -331,7 +331,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 0.1
-  chanceReproductionLoup: 0.35
+  chanceReproductionLoup: 0.4
   chanceReproductionMouton: 0.4
   maxLifespanLoup: 4
   maxLifespanMouton: 5
