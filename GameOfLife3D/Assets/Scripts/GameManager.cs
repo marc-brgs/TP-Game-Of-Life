@@ -11,11 +11,24 @@ public class GameManager : MonoBehaviour
         public int voisins;
         public bool alive;
 
-        public Case()
+        public Case(int x, int y)
         {
             obj = new GameObject();
+            var mf = obj.AddComponent<MeshFilter>();
+            var mr = obj.AddComponent<MeshRenderer>();
+            mf.mesh = Resources.GetBuiltinResource<Mesh>("Cube.fbx");
+            
+            obj.transform.position = new Vector3(x, y, 0f);
             voisins = 0;
             alive = false;
+        }
+        
+        public void setAlive()
+        {
+            if (alive)
+                obj.GetComponent<MeshRenderer>().enabled = true;
+            else
+                obj.GetComponent<MeshRenderer>().enabled = false;
         }
     }
 
@@ -24,19 +37,21 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        board = new Case[20][];
+        int x = 86;
+        int y = 48;
+        
+        board = new Case[x][];
 
-        for (int i = 0; i < 20; i++)
+        for (int i = 0; i < x; i++)
         {
-            board[i] = new Case[20];
+            board[i] = new Case[y];
         }
 
-        for (int i = 0; i < 20; i++)
+        for (int i = 0; i < x; i++)
         {
-            for (int j = 0; j < 20; j++)
+            for (int j = 0; j < y; j++)
             {
-                board[i][j] = new Case();
-                board[i][j].obj 
+                board[i][j] = new Case(i, j);
             }
         }
         
