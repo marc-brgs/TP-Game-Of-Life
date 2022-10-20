@@ -17,10 +17,16 @@ public class GameManager : MonoBehaviour
     public int maxLifespanMouton = 5;
     
     [SerializeField] private Cell[][] board;
-    
+
+    private Texture2D textmoutton;
+    private Texture2D textLoup;
+    private Texture2D textherbe;
     // Start is called before the first frame update
     void Start()
     {
+        textmoutton = Resources.Load("moutton") as Texture2D;
+        textLoup = Resources.Load("loup") as Texture2D;
+        textherbe = Resources.Load("herbe") as Texture2D;
         board = new Cell[SCREEN_X][];
 
         for (int i = 0; i < SCREEN_X; i++)
@@ -287,16 +293,17 @@ public class GameManager : MonoBehaviour
     // Recolor cell depending of their type
     void colorizeType()
     {
+
         for (int x = 0; x < SCREEN_X; x++)
         {
             for (int y = 0; y < SCREEN_Y; y++)
             {
                 if(board[x][y].type == 1)
-                    board[x][y].GetComponent<Renderer>().material.color = Color.black;
+                    board[x][y].GetComponent<Renderer>().material.mainTexture = textmoutton;
                 else if(board[x][y].type == 2)
-                    board[x][y].GetComponent<Renderer>().material.color = Color.white;
+                    board[x][y].GetComponent<Renderer>().material.mainTexture = textLoup;
                 else if(board[x][y].type == 3)
-                    board[x][y].GetComponent<Renderer>().material.color = Color.green;
+                    board[x][y].GetComponent<Renderer>().material.mainTexture = textherbe;
             }
         }
     }
