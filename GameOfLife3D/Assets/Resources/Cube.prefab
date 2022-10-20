@@ -110,6 +110,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 421bd844eeeea304688750f29a096312, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  obj: {fileID: 0}
-  voisins: 0
+  voisinsLoup: 0
+  voisinsHerbe: 0
+  voisinsMouton: 0
   alive: 0
+  type: 0
+  lifespan: 0
+  lastEat: 0
