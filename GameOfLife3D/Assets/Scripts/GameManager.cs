@@ -6,8 +6,10 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    int SCREEN_X = 86;
+    int SCREEN_X = 85;
     int SCREEN_Y = 48;
+    public float speed = 0.1f;
+    private float timer = 0;
 
     [SerializeField] private Cell[][] board;
     
@@ -35,9 +37,16 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        CountNeighbors();
-        
-        populationControl();
+        if (timer >= speed)
+        {
+            timer = 0f;
+            CountNeighbors();
+            populationControl();
+        }
+        else
+        {
+            timer += Time.deltaTime;
+        }
     }
 
     void CountNeighbors()
@@ -112,7 +121,7 @@ public class GameManager : MonoBehaviour
     bool randomActiveCell()
     {
         int rand = UnityEngine.Random.Range(0, 100);
-        if (rand > 80)
+        if (rand > 75)
             return true;
         return false;
     }
@@ -125,7 +134,7 @@ public class GameManager : MonoBehaviour
             {
                 if (board[x][y].alive)
                 {
-                    if (board[x][y].voisins != 2 || board[x][y].voisins != 3)
+                    if (board[x][y].voisins != 2 && board[x][y].voisins != 3)
                     {
                         board[x][y].setAlive(false);
                     }

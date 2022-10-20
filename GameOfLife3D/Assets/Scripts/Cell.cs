@@ -6,7 +6,7 @@ public class Cell : MonoBehaviour
 {
     public int voisins = 0;
     public bool alive = false;
-
+    
     /*public Cell(int x, int y)
     {
         obj = new GameObject();
