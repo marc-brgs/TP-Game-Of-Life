@@ -299,9 +299,9 @@ public class GameManager : MonoBehaviour
             for (int y = 0; y < SCREEN_Y; y++)
             {
                 if(board[x][y].type == 1)
-                    board[x][y].GetComponent<Renderer>().material.mainTexture = textmoutton;
-                else if(board[x][y].type == 2)
                     board[x][y].GetComponent<Renderer>().material.mainTexture = textLoup;
+                else if(board[x][y].type == 2)
+                    board[x][y].GetComponent<Renderer>().material.mainTexture = textmoutton;
                 else if(board[x][y].type == 3)
                     board[x][y].GetComponent<Renderer>().material.mainTexture = textherbe;
             }
