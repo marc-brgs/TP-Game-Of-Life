@@ -3,30 +3,39 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.Design.Serialization;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
-    int SCREEN_X = 85;
-    int SCREEN_Y = 48;
-    public float speed = 0.1f;
+    [SerializeField] private string gameMode = "LMH"; // BASIC or LMH (Loup Mouton Herbe)
+    [SerializeField] private GameObject colorCodeText;
+    
+    private int SCREEN_X = 85;
+    private int SCREEN_Y = 48;
+
+    [SerializeField] private float speed = 0.1f;
     private float timer = 0;
 
-    public float chanceReproductionLoup = 0.5f;
-    public float chanceReproductionMouton = 0.5f;
-    public int maxLifespanLoup = 2;
-    public int maxLifespanMouton = 5;
+    [SerializeField] private float chanceReproductionLoup = 0.5f;
+    [SerializeField] private float chanceReproductionMouton = 0.5f;
+    [SerializeField] private int maxLifespanLoup = 2;
+    [SerializeField] private int maxLifespanMouton = 5;
     
     [SerializeField] private Cell[][] board;
 
-    private Texture2D textmoutton;
-    private Texture2D textLoup;
-    private Texture2D textherbe;
+    private Texture2D textureMouton;
+    private Texture2D textureLoup;
+    private Texture2D textureHerbe;
+
     // Start is called before the first frame update
     void Start()
     {
-        textmoutton = Resources.Load("moutton") as Texture2D;
-        textLoup = Resources.Load("loup") as Texture2D;
-        textherbe = Resources.Load("herbe") as Texture2D;
+        if(GameConfig.instance != null && GameConfig.instance.gameMode != null)
+            gameMode = GameConfig.instance.gameMode;
+        
+        textureLoup = Resources.Load("loup") as Texture2D;
+        textureMouton = Resources.Load("mouton") as Texture2D;
+        textureHerbe = Resources.Load("herbe") as Texture2D;
         board = new Cell[SCREEN_X][];
 
         for (int i = 0; i < SCREEN_X; i++)
@@ -51,6 +60,9 @@ public class GameManager : MonoBehaviour
                 }
             }
         }
+        
+        if(gameMode == "BASIC")
+            colorCodeText.SetActive(false);
     }
 
     // Update is called once per frame
@@ -60,13 +72,24 @@ public class GameManager : MonoBehaviour
         {
             timer = 0f;
             countNeighbors();
-            populationControl();
-            colorizeType();
+            
+            if(gameMode == "BASIC") {
+                basicPopulationControl();
+            }
+            else
+            {
+                populationControl();
+                colorizeType();
+            }
         }
         else
         {
             timer += Time.deltaTime;
         }
+        
+        // Echap menu
+        if(Input.GetKeyDown(KeyCode.Escape))
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex - 1);
     }
     
     bool randomActiveCell()
@@ -82,10 +105,9 @@ public class GameManager : MonoBehaviour
         int rand = UnityEngine.Random.Range(0, 100);
         if (rand < 33)
             return 1;
-        else if (rand > 66)
+        if (rand > 66)
             return 3;
-        else
-            return 2;
+        return 2;
     }
     
     void countNeighbors()
@@ -214,9 +236,36 @@ public class GameManager : MonoBehaviour
                 board[x][y].voisinsLoup = numLoup;
                 board[x][y].voisinsMouton = numMouton;
                 board[x][y].voisinsHerbe = numHerbe;
+                board[x][y].voisins = numLoup + numMouton + numHerbe;
             }
         }
        
+    }
+
+    private void basicPopulationControl()
+    {
+        for (int x = 0; x < SCREEN_X; x++)
+        {
+            for (int y = 0; y < SCREEN_Y; y++)
+            {
+                if (board[x][y].alive)
+                {
+                    // Game of Life basique
+                    if (board[x][y].voisins != 2 && board[x][y].voisins != 3)
+                    {
+                        board[x][y].setAlive(false, 1);
+                    }
+                }
+                else
+                {
+                    // Game of Life basique
+                    if (board[x][y].voisins == 3)
+                    {
+                        board[x][y].setAlive(true, 1);
+                    }
+                }
+            }
+        }
     }
 
     void populationControl()
@@ -227,12 +276,6 @@ public class GameManager : MonoBehaviour
             {
                 if (board[x][y].alive)
                 {
-                    // Game of Life basique
-                    /* if (board[x][y].voisins != 2 && board[x][y].voisins != 3)
-                    {
-                        board[x][y].setAlive(false);
-                    } */
-                    
                     // Lifespan loup et mouton counter attack (3 moutons peuvent tuer un loup)
                     if (board[x][y].type == 1)
                     {
@@ -262,12 +305,6 @@ public class GameManager : MonoBehaviour
                 }
                 else
                 {
-                    // Game of Life basique
-                    /* if (board[x][y].voisins == 3)
-                    {
-                        board[x][y].setAlive(true);
-                    } */
-                    
                     // Reproduction mouton
                     if (board[x][y].voisinsMouton > 2)
                     {
@@ -293,17 +330,16 @@ public class GameManager : MonoBehaviour
     // Recolor cell depending of their type
     void colorizeType()
     {
-
         for (int x = 0; x < SCREEN_X; x++)
         {
             for (int y = 0; y < SCREEN_Y; y++)
             {
                 if(board[x][y].type == 1)
-                    board[x][y].GetComponent<Renderer>().material.mainTexture = textLoup;
+                    board[x][y].GetComponent<Renderer>().material.mainTexture = textureLoup;
                 else if(board[x][y].type == 2)
-                    board[x][y].GetComponent<Renderer>().material.mainTexture = textmoutton;
+                    board[x][y].GetComponent<Renderer>().material.mainTexture = textureMouton;
                 else if(board[x][y].type == 3)
-                    board[x][y].GetComponent<Renderer>().material.mainTexture = textherbe;
+                    board[x][y].GetComponent<Renderer>().material.mainTexture = textureHerbe;
             }
         }
     }
